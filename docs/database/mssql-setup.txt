@@ -1,0 +1,8 @@
+1. docker pull microsoft/mssql-server-linux:latest
+
+2. docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=<YourStrong!Passw0rd>" -p 1433:1433 --name mssql-server -d microsoft/mssql-server-linux:latest
+
+3. docker exec -it mssql-server /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "<YourStrong!Passw0rd>" -Q "ALTER LOGIN SA WITH PASSWORD='<NEW_PASSWORD>'"
+
+4. docker exec -it mssql-server "bash"
+
