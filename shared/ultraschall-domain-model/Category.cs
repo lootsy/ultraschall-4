@@ -6,7 +6,6 @@ namespace ultraschall_domain_model
     {
         public Guid Id { get; set; }
         public String Name { get; set; }
-
         public Category Parent { get; set; }
     }
 }
