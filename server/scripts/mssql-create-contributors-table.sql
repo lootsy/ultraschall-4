@@ -1,0 +1,21 @@
+USE ultraschall;
+GO
+IF OBJECT_ID(N'Contributors', N'U') IS NOT NULL
+BEGIN
+  DROP TABLE Contributors;
+END
+GO
+CREATE TABLE Contributors
+(
+  id UNIQUEIDENTIFIER DEFAULT NEWID(),
+  title NVARCHAR(256) NOT NULL,
+  subtitle NVARCHAR(256),
+  description NVARCHAR(256) NOT NULL,
+  summary NVARCHAR(256),
+  language NVARCHAR(8) NOT NULL,
+  link NVARCHAR(512) NOT NULL,
+  image NVARCHAR(512) NOT NULL,
+  owner UNIQUEIDENTIFIER NOT NULL REFERENCES Contributors(id) ON DELETE CASCADE
+)
+GO
+
