@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sql="urn:schemas-microsoft-com:mapping-schema" elementFormDefault="qualified" attributeFormDefault="unqualified" vc:minVersion="1.1">
+	<xs:element name="Ultraschall">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+	</xs:element>
+	<xs:simpleType name="Guid">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})|(\{[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\})"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="Item">
+		<xs:attribute name="id" type="Guid" use="required" inheritable="true"/>
+		<xs:attribute name="visibility" type="Visibility" use="optional" default="private"/>
+		<xs:attribute name="created" type="xs:dateTimeStamp" use="required"/>
+		<xs:attribute name="modified" type="xs:dateTimeStamp" use="optional"/>
+		<xs:attribute name="comment" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="Fabric">
+		<xs:complexContent>
+			<xs:extension base="Item">
+				<xs:sequence>
+					<xs:element name="Title" type="xs:string"/>
+					<xs:element name="Description" type="xs:string"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Podcast">
+		<xs:complexContent>
+			<xs:extension base="Fabric">
+				<xs:sequence>
+					<xs:element name="Episode" type="Episode" maxOccurs="unbounded"/>
+					<xs:element name="Season" type="Season" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="Image" type="Image"/>
+				</xs:sequence>
+				<xs:attribute name="organizationId" type="Guid" use="required"/>
+				<xs:attribute name="uri" type="xs:anyURI" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Season">
+		<xs:complexContent>
+			<xs:extension base="Fabric">
+				<xs:attribute name="sequence" type="xs:positiveInteger" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Episode">
+		<xs:complexContent>
+			<xs:extension base="Fabric">
+				<xs:sequence>
+					<xs:element name="Contribution" type="Contribution" maxOccurs="unbounded"/>
+					<xs:element name="Chapter" type="Chapter" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="Image" type="Image" minOccurs="0"/>
+				</xs:sequence>
+				<xs:attribute name="seasonId" type="Guid" use="optional"/>
+				<xs:attribute name="sequence" type="xs:nonNegativeInteger" use="required"/>
+				<xs:attribute name="type" type="EpisodeType" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Presence">
+		<xs:complexContent>
+			<xs:extension base="Item">
+				<xs:attribute name="uri" type="xs:anyURI" use="required"/>
+				<xs:attribute name="icon" type="xs:anyURI" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Contributor">
+		<xs:complexContent>
+			<xs:extension base="Item">
+				<xs:sequence>
+					<xs:element name="Presence" type="Presence" maxOccurs="unbounded"/>
+				</xs:sequence>
+				<xs:attribute name="name" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Contribution">
+		<xs:complexContent>
+			<xs:extension base="Item">
+				<xs:attribute name="contributorId" type="Guid" use="required"/>
+				<xs:attribute name="role" type="ContributorRole" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:simpleType name="ContributorRole">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="owner"/>
+			<xs:enumeration value="host"/>
+			<xs:enumeration value="guest"/>
+			<xs:enumeration value="producer"/>
+			<xs:enumeration value="author"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Visibility">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="public"/>
+			<xs:enumeration value="protected"/>
+			<xs:enumeration value="private"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EpisodeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="full"/>
+			<xs:enumeration value="trailer"/>
+			<xs:enumeration value="bonus"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="Organization">
+		<xs:complexContent>
+			<xs:extension base="Fabric">
+				<xs:sequence>
+					<xs:element name="Contribution" type="Contribution" maxOccurs="unbounded"/>
+				</xs:sequence>
+				<xs:attribute name="name" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Tag">
+		<xs:complexContent>
+			<xs:extension base="Item">
+				<xs:attribute name="timestamp" type="xs:time" use="required"/>
+				<xs:attribute name="offset" type="xs:duration" use="optional"/>
+				<xs:attribute name="velocity" type="xs:double" use="optional" default="1.0"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Annotation">
+		<xs:complexContent>
+			<xs:extension base="Tag">
+				<xs:attribute name="uri" type="xs:anyURI" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Chapter">
+		<xs:complexContent>
+			<xs:extension base="Annotation">
+				<xs:sequence>
+					<xs:element name="Location" type="Location" minOccurs="0"/>
+					<xs:element name="Image" type="Image" minOccurs="0"/>
+				</xs:sequence>
+				<xs:attribute name="duration" type="xs:duration" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Image">
+		<xs:complexContent>
+			<xs:extension base="Item">
+				<xs:attribute name="uri" type="xs:anyURI" use="required"/>
+				<xs:attribute name="mime" type="xs:string" use="required"/>
+				<xs:attribute name="author" type="xs:string" use="required"/>
+				<xs:attribute name="license" type="xs:string" use="required"/>
+				<xs:attribute name="copyright" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Location">
+		<xs:complexContent>
+			<xs:extension base="Annotation">
+				<xs:attribute name="lattitude" type="xs:double" use="required"/>
+				<xs:attribute name="longitude" type="xs:double" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>
